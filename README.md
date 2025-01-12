@@ -1,67 +1,231 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Panduan Pembuatan CRUD di Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+### 1. Membuat Model, Migration, dan Controller
 
-## About Laravel
+1. Membuat Model, Migration, dan Controller Sekaligus
+   Jalankan perintah berikut untuk membuat model, migration, dan controller:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    ```bash
+    php artisan make:model namamenu -mcr
+    ```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. Edit File Migration
+   Buka file migration yang telah dibuat di folder database/migrations dan tambahkan schema berikut di fungsi up:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    ```bash
+    public function up()
+     {
+         Schema::create('namamenus', function (Blueprint $table) {
+             $table->id();
+             $table->string('judul')->nullable();
+             $table->text('deskripsi')->nullable();
+             $table->string('gambar')->nullable();
+             $table->timestamps();
+         });
+     }
+    ```
 
-## Learning Laravel
+3. Migrasi Schema ke Database
+   Jalankan perintah berikut untuk menerapkan schema ke database:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    ```bash
+    php artisan migrate
+    ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+4. Tambahkan Properti di Model
+   Edit file app/Models/NamaMenu.php untuk menambahkan properti $fillable:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    ```bash
+    <?php
 
-## Laravel Sponsors
+     namespace App\Models;
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+     use Illuminate\Database\Eloquent\Factories\HasFactory;
+     use Illuminate\Database\Eloquent\Model;
 
-### Premium Partners
+     class namamenu extends Model
+     {
+         use HasFactory;
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+         protected $fillable = ['judul', 'deskripsi', 'gambar'];
+     }
+    ```
 
-## Contributing
+5. Implementasi CRUD di Controller
+   Edit file controller app/Http/Controllers/NamaMenuController.php dan tambahkan fungsi CRUD berikut:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ```bash
+     <?php
 
-## Code of Conduct
+     namespace App\Http\Controllers;
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+     use Illuminate\Http\Request;
+     use App\Models\NamaMenu;
 
-## Security Vulnerabilities
+     class NamaMenuController extends Controller
+     {
+         // GET - Menampilkan daftar namamenu
+         public function index()
+         {
+             $namamenus = NamaMenu::all();
+             return response()->json([
+                 'success' => true,
+                 'data' => $namamenus
+             ]);
+         }
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+         // GET per ID - Menampilkan detail namamenu
+         public function show($id)
+         {
+             $namamenu = NamaMenu::find($id);
 
-## License
+             if (!$namamenu) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'NamaMenu not found.'
+                 ], 404);
+             }
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# books-backend
+             return response()->json([
+                 'success' => true,
+                 'data' => $namamenu
+             ]);
+         }
+
+         // POST - Menyimpan namamenu baru
+         public function store(Request $request)
+         {
+             $request->validate([
+                 'judul' => 'required|string|max:255',
+                 'deskripsi' => 'nullable|string',
+                 'gambar' => 'nullable|image|max:2048',
+             ]);
+
+             $imagePath = $request->file('gambar')
+                 ? $request->file('gambar')->store('images', 'public')
+                 : null;
+
+             $namamenu = NamaMenu::create([
+                 'judul' => $request->judul,
+                 'deskripsi' => $request->deskripsi,
+                 'gambar' => $imagePath,
+             ]);
+
+             return response()->json([
+                 'success' => true,
+                 'message' => 'NamaMenu berhasil ditambahkan.',
+                 'data' => $namamenu
+             ]);
+         }
+
+         // PUT - Menyimpan perubahan pada namamenu
+         public function update(Request $request, $id)
+         {
+             $request->validate([
+                 'judul' => 'required|string|max:255',
+                 'deskripsi' => 'nullable|string',
+                 'gambar' => 'nullable|image|max:2048',
+             ]);
+
+             $namamenu = NamaMenu::find($id);
+
+             if (!$namamenu) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'NamaMenu not found.'
+                 ], 404);
+             }
+
+             if ($request->file('gambar')) {
+                 $imagePath = $request->file('gambar')->store('images', 'public');
+                 $namamenu->gambar = $imagePath;
+             }
+
+             $namamenu->update([
+                 'judul' => $request->judul,
+                 'deskripsi' => $request->deskripsi,
+             ]);
+
+             return response()->json([
+                 'success' => true,
+                 'message' => 'NamaMenu berhasil diperbarui.',
+                 'data' => $namamenu
+             ]);
+         }
+
+         // DELETE - Menghapus namamenu
+         public function destroy($id)
+         {
+             $namamenu = NamaMenu::find($id);
+
+             if (!$namamenu) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'NamaMenu not found.'
+                 ], 404);
+             }
+
+             $namamenu->delete();
+
+             return response()->json([
+                 'success' => true,
+                 'message' => 'NamaMenu berhasil dihapus.'
+             ]);
+         }
+     }
+    ```
+
+6. Hubungkan Controller ke Route
+   Tambahkan route berikut di file routes/api.php:
+
+    ```bash
+    use App\Http\Controllers\NamaMenuController;
+
+    Route::resource('namamenu', NamaMenuController::class);
+    ```
+
+### 2. Membuat Seeder
+
+1. Membuat Seeder
+   Jalankan perintah berikut untuk membuat seeder:
+
+    ```bash
+    php artisan make:seeder NamaMenuSeeder
+    ```
+
+2. Isi Seeder
+
+    ```bash
+    <?php
+
+     namespace Database\Seeders;
+
+     use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+     use Illuminate\Support\Facades\DB;
+     use Illuminate\Database\Seeder;
+
+     class NamaMenuSeeder extends Seeder
+     {
+         /**
+          * Run the database seeds.
+          *
+          * @return void
+          */
+         public function run()
+         {
+             DB::table('namamenus')->insert([
+                 'judul' => 'Contoh NamaMenu',
+                 'deskripsi' => 'Ini adalah deskripsi contoh namamenu.',
+                 'gambar' => null,
+                 'created_at' => now(),
+                 'updated_at' => now(),
+             ]);
+         }
+     }
+    ```
+
+3. Jalankan Seeder
+   Jalankan perintah berikut untuk menambahkan data ke tabel:
+    ```bash
+    php artisan db:seed --class=NamaMenuSeeder
+    ```
