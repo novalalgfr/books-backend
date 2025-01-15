@@ -20,4 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('akun', AkunController::class);
+
+Route::post('/login', [AkunController::class, 'login']);
+
 Route::resource('buku', BukuController::class);
