@@ -78,8 +78,10 @@ class AkunController extends Controller
         }
 
         $akun->update([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => $request->role,
         ]);
 
         return response()->json([

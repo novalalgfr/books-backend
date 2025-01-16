@@ -42,7 +42,7 @@ class BukuController extends Controller
             'judul_buku' => 'required|string|max:255',
             'deskripsi_buku' => 'nullable|string',
             'harga_buku' => 'nullable|string',
-            'cover_buku' => 'nullable|image|max:2048',
+            'cover_buku' => 'nullable|image|max:2048'
         ]);
 
         $imagePath = $request->file('cover_buku')
@@ -53,7 +53,7 @@ class BukuController extends Controller
             'judul_buku' => $request->judul_buku,
             'deskripsi_buku' => $request->deskripsi_buku,
             'harga_buku' => $request->harga_buku,
-            'cover_buku' => $imagePath,
+            'cover_buku' => $imagePath
         ]);
 
         return response()->json([
@@ -78,7 +78,7 @@ class BukuController extends Controller
         if (!$buku) {
             return response()->json([
                 'success' => false,
-                'message' => 'Buku not found.'
+                'message' => 'Buku tidak ditemukan.'
             ], 404);
         }
 
